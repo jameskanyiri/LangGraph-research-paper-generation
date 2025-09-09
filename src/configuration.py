@@ -17,8 +17,12 @@ ResearchPaperType = Literal[
 
 ModelName = Literal[
     # --- OpenAI GPT-4 family ---
+    "openai:gpt-5-nano",
+    "openai:gpt-4.1",
+    "openai:o4-mini-2025-04-16",
     "openai:gpt-4o",
     "openai:gpt-4o-mini",
+    
 
     # --- OpenAI GPT-5 family ---
     "openai:gpt-5",
@@ -51,10 +55,10 @@ class Configuration(BaseModel):
 
     # Models
     query_model: Annotated[ModelName, {"__template_metadata__": {"kind": "llm"}}] = Field(
-        default="openai:gpt-4o-mini", description="Model for retrieval/planning queries."
+        default="openai:gpt-4o", description="Model for retrieval/planning queries."
     )
     planner_model: Annotated[ModelName, {"__template_metadata__": {"kind": "llm"}}] = Field(
-        default="openai:gpt-4o-mini", description="Model for section planning/outline."
+        default="openai:gpt-4o", description="Model for section planning/outline."
     )
     drafting_model: Annotated[ModelName, {"__template_metadata__": {"kind": "llm"}}] = Field(
         default="openai:gpt-4o", description="Model for prose drafting."

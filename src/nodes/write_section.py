@@ -47,7 +47,7 @@ Do not include extra commentary, explanations, or metadata.
 
 
 
-async def write_section(state: SectionWriterState, config: RunnableConfig):
+def write_section(state: SectionWriterState, config: RunnableConfig):
     
     #get the section title and description
     section_title = state['section'].title
@@ -57,7 +57,7 @@ async def write_section(state: SectionWriterState, config: RunnableConfig):
     #Load configuration
     configuration = config.get("configurable", {})
     
-    template = configuration.get("template", "")
+    template = configuration.get("document_template", "")
     
     #system instruction
     system_instruction = AGENT_PROMPT.format(
@@ -78,6 +78,6 @@ async def write_section(state: SectionWriterState, config: RunnableConfig):
         }
     ]
     
-    response = await section_writer_llm.ainvoke(messages)
+    response = section_writer_llm.invoke(messages)
     
     return {"completed_sections":[response.content]}

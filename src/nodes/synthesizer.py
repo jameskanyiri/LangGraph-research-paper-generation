@@ -2,7 +2,7 @@ from src.state import AgentState
 from langchain_core.runnables import RunnableConfig
 
 
-async def synthesizer(state: AgentState, config: RunnableConfig):
+def synthesizer(state: AgentState, config: RunnableConfig):
     
     #get the completed sections
     completed_sections = state['completed_sections']

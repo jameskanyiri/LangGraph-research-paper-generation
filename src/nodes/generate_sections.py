@@ -3,15 +3,21 @@ from src.state import AgentState
 from pydantic import BaseModel, Field
 from langchain_core.runnables import RunnableConfig
 
+
 class Section(BaseModel):
     title: str = Field(description="The title of the section")
-    description: str = Field(description="A well detailed description of what should be included in the section")
-    
+    description: str = Field(
+        description="A well detailed description of what should be included in the section"
+    )
+
+
 class Sections(BaseModel):
     sections: list[Section] = Field(description="The sections of the topic")
-    
-    
-structured_llm = init_chat_model(model="gpt-4",temperature=0).with_structured_output(Sections)
+
+
+structured_llm = init_chat_model(
+    model="gpt-4.1-nano", model_provider="openai"
+).with_structured_output(Sections)
 
 AGENT_PROMPT = """
 # Identity
@@ -80,21 +86,81 @@ while "Testing & Evaluation" should describe sandbox execution, metrics, and ite
 """
 
 
-async def generate_sections(state: AgentState, config: RunnableConfig):
-    
-    #Get topic to generate sections for
-    topic= state['topic']
-    
-    #Load configuration
+default_template = """
+            # Research Paper — Analytical Paper
+
+            ## Title Page
+            - **Title**
+            - **Authors & Affiliations**
+            - **Correspondence**
+
+            ## Abstract (150–250 words)
+            - Concise summary of the research question, sources analyzed, methods of analysis, and main insights.
+            - Should emphasize interpretation rather than taking a definitive stance.
+            - No citations here.
+
+            ## Introduction
+            - Background and motivation
+            - Research question(s) or guiding problem
+            - Scope and boundaries of the analysis
+            - Contributions (bulleted list of what the paper adds)
+            - Organization of the paper
+
+            ## Related Work / Literature Context
+            - Synthesize prior literature and perspectives
+            - Highlight debates, patterns, or trends relevant to the analysis
+            - Identify gaps that your analysis addresses
+
+            ## Analytical Framework / Method
+            - Explain the framework, models, or methods used for analysis
+            - Data, texts, or materials examined
+            - Criteria for inclusion/exclusion
+            - Assumptions and rationale
+
+            ## Analysis
+            - Systematic breakdown of the evidence (thematic, chronological, comparative, etc.)
+            - Tables, figures, or diagrams to support interpretation
+            - Multiple subsections allowed (###) to handle dimensions of analysis
+
+            ## Discussion
+            - Interpret the findings: what do they mean?
+            - Connections back to literature
+            - Strengths and limitations of your analysis
+            - Broader implications
+
+            ## Conclusion
+            - Recap of key insights
+            - What new understanding the analysis provides
+            - Implications for theory, practice, or future research
+
+            ## Future Work
+            - Open questions raised by the analysis
+            - Possible extensions of the framework or data
+            - Recommendations for deeper or comparative studies
+
+            ## References
+            - Full bibliography in the required style (APA, IEEE, etc.)
+
+            ## Appendices (optional)
+            - Extended tables, coding schemes, or supplementary analysis
+            """
+
+
+def generate_sections(state: AgentState, config: RunnableConfig):
+
+    # Get topic to generate sections for
+    topic = state["topic"]
+
+    # Load configuration
     configurable = config.get("configurable", {})
-    
-    template = configurable.get("document_template", "")
-    
+
+    template = configurable.get("document_template", default_template)
+
     system_instruction = AGENT_PROMPT.format(
         topic=topic,
         template=template,
     )
-    
+
     messages = [
         {
             "role": "system",
@@ -103,15 +169,9 @@ async def generate_sections(state: AgentState, config: RunnableConfig):
         {
             "role": "user",
             "content": "Generate sections for the given topic",
-        }
+        },
     ]
-    
-    response = await structured_llm.ainvoke(messages)
-    
-    
+
+    response = structured_llm.invoke(messages)
+
     return {"sections": response.sections}
-    
-    
-    
-    
-    
