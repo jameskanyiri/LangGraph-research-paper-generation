@@ -12,6 +12,8 @@ class AgentState(TypedDict):
     completed_sections: Annotated[list[Section], operator.add]
     final_report: str
     
+
+    
     
 class SectionWriterState(TypedDict):
     section: Section

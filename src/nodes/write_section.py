@@ -47,7 +47,7 @@ Do not include extra commentary, explanations, or metadata.
 
 
 
-async def section_writer(state: SectionWriterState, config: RunnableConfig):
+async def write_section(state: SectionWriterState, config: RunnableConfig):
     
     #get the section title and description
     section_title = state['section'].title

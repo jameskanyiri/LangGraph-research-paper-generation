@@ -89,7 +89,6 @@ result = await graph.ainvoke(
 print(result["final_report"])
 ```
 
-
 ## ⚙️ Configuration
 
 ### Custom Templates

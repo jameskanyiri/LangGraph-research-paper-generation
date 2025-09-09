@@ -86,9 +86,9 @@ async def generate_sections(state: AgentState, config: RunnableConfig):
     topic= state['topic']
     
     #Load configuration
-    configuration = config.get("configurable", {})
+    configurable = config.get("configurable", {})
     
-    template = configuration.get("template", "")
+    template = configurable.get("document_template", "")
     
     system_instruction = AGENT_PROMPT.format(
         topic=topic,
