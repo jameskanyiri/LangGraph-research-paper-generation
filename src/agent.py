@@ -1,6 +1,6 @@
 from langgraph.graph import StateGraph, START, END
 
-from src.state import AgentState
+from src.state import AgentState, InputState, OutputState
 from src.nodes.generate_sections import generate_sections
 from src.configuration import Configuration
 from src.nodes.write_section import write_section
@@ -13,7 +13,7 @@ def assign_to_section_writer(state: AgentState):
     
     
 
-graph_builder = StateGraph(AgentState, config_schema=Configuration)
+graph_builder = StateGraph(AgentState,input_schema=InputState, output_schema=OutputState, config_schema=Configuration)
 
 
 graph_builder.add_node("generate_sections", generate_sections)
