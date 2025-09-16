@@ -1,17 +1,13 @@
 from langchain.chat_models import init_chat_model
 from src.state import AgentState
 from pydantic import BaseModel, Field
+from pydantic import ConfigDict
 from langchain_core.runnables import RunnableConfig
-
-
-class Section(BaseModel):
-    title: str = Field(description="The title of the section")
-    description: str = Field(
-        description="A well detailed description of what should be included in the section"
-    )
+from src.schema import Section
 
 
 class Sections(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     sections: list[Section] = Field(description="The sections of the topic")
 
 
@@ -33,46 +29,28 @@ Your goal is to produce a **list of sections**, one for each item in the templat
 # Guidelines
 - Always generate **all sections listed in the template**, in the same order.
 - Return a **list of sections** where each section has exactly:
-  * `title`: A concise title (use the template wording as-is, or make it clearer if necessary).
-  * `description`: A well-detailed explanation of what should be included in that section.
-- Each description must include:
-  - The **purpose** of the section.
-  - The **scope**: what content belongs (and what does not).
-  - The **key points, elements, or subtopics** to cover.
-  - Where useful, provide **examples**, **common pitfalls**, or **best practices**.
-- Ensure that the sections are **specific, actionable, and informative**, not generic.
-- Do not omit any template section, even if it feels redundant.
-- The final output must be a **list of sections**, not a single object.
-
-# Examples
-
-<example id="1">
-<Topic>
-Evaluating LLM-based Coding Agents
-</Topic>
-<Template>
-Introduction; Problem Definition; Methodology; Experiments; Results; Limitations; Future Work
-</Template>
-<assistant_response_note>
-Expected: A list of 7 sections, each with a `title` from the template and a detailed `description`.
-For example, "Methodology" should mention data sources, evaluation metrics, and testing pipeline,
-while "Limitations" should cover model bias, reproducibility issues, or incomplete coverage.
-</assistant_response_note>
-</example>
-
-<example id="2">
-<Topic>
-Building a Multi-Agent LangGraph Workflow
-</Topic>
-<Template>
-Overview; Architecture; Setup; Implementation Steps; Testing & Evaluation; Deployment; Best Practices
-</Template>
-<assistant_response_note>
-Expected: A list of 7 sections with structured `title` and `description`.
-"Architecture" should explain agent roles, communication, and state flow,
-while "Testing & Evaluation" should describe sandbox execution, metrics, and iteration.
-</assistant_response_note>
-</example>
+  * `title`: A concise title (use the template wording as-is, or clarify if needed).
+  * `description`: A topic-specific coverage plan for what to include in that section.
+  * `require_research`: A boolean indicating whether this section needs external research (true) or can be written from other sections' content (false).
+  * `search_queries`: Default empty list.
+  * `search_results`: Default empty list.
+  * `section_context`: Default empty string.
+  
+  
+- Each description must:
+  - Be grounded in the provided topic (avoid generic phrasing like "This section should...").
+  - State **what content should be covered**, not just what the section “is about.”
+  - Include:
+    * **Purpose** of the section.
+    * **Scope**: what belongs, what is out-of-scope.
+    * **Key points, elements, or subtopics** tied to the topic.
+    * **Methods, datasets, or evidence** if applicable.
+    * **Examples, pitfalls, or best practices** if relevant.
+    * **Deliverables** such as figures, tables, or diagrams if useful.
+- The descriptions must be **actionable and specific**, so they can guide someone writing the section.
+- Do not restate the section title in the description.
+- Do not omit any section from the template.
+- For `require_research`: Set to `true` for sections that need external data, studies, or current information (e.g., "Related Work", "Results", "Analysis"). Set to `false` for sections that can be written from other sections' content (e.g., "Introduction", "Conclusion", "Organization of the paper").
 
 # Context
 

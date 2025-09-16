@@ -2,23 +2,30 @@ from typing import TypedDict
 from typing import Annotated
 import operator
 
-class Section(TypedDict):
-    title: str
-    content: str
-    
-    
+from src.schema import Section, SearchResult
+
+
+# Main Agent Input State
 class InputState(TypedDict):
     topic: str
 
+
+# Main Agent State
 class AgentState(TypedDict):
     topic: str
     sections: list[Section]
-    completed_sections: Annotated[list[Section], operator.add]
+    researched_sections: Annotated[list[Section], operator.add]
     final_report: str
-    
+
+
+# Main Agent Output State
 class OutputState(TypedDict):
     final_report: str
-  
-class SectionWriterState(TypedDict):
+
+
+class ResearchAgentState(TypedDict):
     section: Section
-    completed_sections: Annotated[list[Section], operator.add]
+    search_queries: list[str]
+    search_results: list[SearchResult]
+    section_context: str
+    researched_sections: Annotated[list[Section], operator.add]
